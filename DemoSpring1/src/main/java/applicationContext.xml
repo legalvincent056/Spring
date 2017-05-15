@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+<!-- Declaration du bean développeur -->
+<bean id="developpeur1" class="com.legal.DemoSpring1.Developpeur">
+	<property name="nom" value="Dev1"/>
+	<property name="anneesExperience" value="8"/>
+</bean>
+
+<!-- Declaration du bean Chef developpeur -->
+<bean id="developpeur2" class="com.legal.DemoSpring1.Developpeur">
+	<property name="nom" value="Dev2"/>
+	<property name="anneesExperience" value="15"/>
+</bean>
+
+<!-- Declaration du bean societeDev puis injection -->
+<bean name="societe" class="com.legal.DemoSpring1.SocieteDevLogiciel">
+	<property name="developpeur" ref="developpeur1"/>
+	<property name="chefDeveloppeur" ref="developpeur2"/>
+</bean>
+
+</beans>
