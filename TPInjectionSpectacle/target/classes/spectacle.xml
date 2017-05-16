@@ -83,7 +83,7 @@
 		<property name="instrument" ref="saxophone" />
 	</bean>
 	
-	<!-- Pour prouver que le fichier XML passe au dessus, je crée un Bean maGuitare et appel la classe piano. Le résultat est Guitare  -->
+	<!-- Pour prouver que le fichier XML passe au dessus, je crée un Bean maGuitare et appel la classe piano. Le résultat est Piano  -->
 	<bean id="maGuitare" class="com.legal.TPInjectionSpectacle.Piano"/>
 
 
