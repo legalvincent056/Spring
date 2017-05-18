@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<!-- Pour l'utilisation des annotations -->
+	<context:annotation-config />
+	<context:component-scan base-package="com.legal.TPInjectionSpectacle" />
+
+
+	<bean id="saxophone" class="com.legal.TPInjectionSpectacle.Saxophone"
+		scope="prototype" />
+
+	<bean id="violon" class="com.legal.TPInjectionSpectacle.Violon"
+		primary="true" />
+
+	<bean id="guitare" class="com.legal.TPInjectionSpectacle.Guitare" />
+
+	<bean id="olivier" class="com.legal.TPInjectionSpectacle.Musicien">
+		<property name="morceau" value="Vive le vent..." />
+		<property name="instrument" ref="saxophone" />
+	</bean>
+
+	<bean id="caroline" class="com.legal.TPInjectionSpectacle.Musicien">
+		<property name="instrument" ref="violon" />
+	</bean>
+
+	<bean id="jeanMarc" class="com.legal.TPInjectionSpectacle.Musicien">
+		<property name="morceau" value="Vive le vent..." />
+		<property name="instrument" ref="saxophone" />
+	</bean>
+
+	<bean id="julien"
+		class="com.legal.TPInjectionSpectacle.MusicienMultiInstrumentiste">
+		<property name="instruments">
+			<list>
+				<ref bean="saxophone" />
+				<ref bean="saxophone" />
+				<ref bean="guitare" />
+				<ref bean="violon" />
+			</list>
+		</property>
+	</bean>
+	<bean id="alain"
+		class="com.legal.TPInjectionSpectacle.MusicienMultiInstrumentiste">
+		<property name="instruments">
+			<set>
+				<ref bean="saxophone" />
+				<ref bean="saxophone" />
+				<ref bean="guitare" />
+				<ref bean="violon" />
+			</set>
+		</property>
+	</bean>
+
+
+<!-- 	<bean id="louis" class="com.legal.TPInjectionSpectacle.Musicien"> -->
+<!-- 		<property name="morceau" value="#{olivier.morceau}" /> -->
+<!-- 		<property name="instrument" ref="violon" /> -->
+<!-- 	</bean> -->
+
+	<bean id="instrument" class="com.legal.TPInjectionSpectacle.Saxophone" />
+	<bean id="michel" class="com.legal.TPInjectionSpectacle.Musicien"
+		autowire="byName">
+		<property name="morceau" value="petit ours de brun..." />
+	</bean>
+
+	<bean id="maurice" class="com.legal.TPInjectionSpectacle.Musicien"
+		autowire="byType">
+		<property name="morceau" value="Ole Ole Ole" />
+	</bean>
+
+	<bean id="parent" class="com.legal.TPInjectionSpectacle.Musicien"
+		abstract="true">
+		<property name="morceau" value="la marseillaise" />
+		<property name="instrument" ref="violon" />
+	</bean>
+
+	<bean id="martin" parent="parent">
+		<property name="instrument" ref="saxophone" />
+	</bean>
+
+	<!-- Pour prouver que le fichier XML passe au dessus, je crée un Bean maGuitare 
+		et appel la classe piano. Le résultat est Piano -->
+	<bean id="maGuitare" class="com.legal.TPInjectionSpectacle.Piano" />
+
+
+	<!-- MISE EN OEUVRE AOP -->
+	<!-- Déclaration du bean intercepteur -->
+	<bean id="spectateurs"
+		class="com.legal.TPInjectionSpectacle.intercepteurs.Spectateurs" />
+
+	<!-- Mise en oeuvre du tissage -->
+	<aop:config>
+		<!-- Definition d'un lieu d'interception -->
+		<aop:pointcut expression="execution(* *.jouer(..))" id="servicePointcut" />
+
+		<aop:aspect id="spectateursAspect" ref="spectateurs">
+			<!-- Méthode appelée avant -->
+			<aop:before method="prendPlace" pointcut-ref="servicePointcut" />
+			<!-- M2thode appelée après -->
+			<aop:after method="applaudit" pointcut-ref="servicePointcut" />
+		</aop:aspect>
+	</aop:config>
+	
+	<!-- Déclaration du bean Musiciens -->
+	<bean id="musiciens" class="com.legal.TPInjectionSpectacle.intercepteurs.Musiciens"/>
+	
+	<aop:config>
+		<aop:pointcut expression="execution(* *.performe(..))" id="servicePointcut"/>
+	
+		<aop:aspect id="musiciensAspect" ref="musiciens">
+			<aop:around method="jejoue" pointcut-ref="servicePointcut"/>
+		</aop:aspect>
+	
+	</aop:config>
+	
+	
+	<!-- Déclaration Bean Spectateurs2 pour utiliser les annotations et non plus le XML -->
+	<bean id="spectateurs2" class="com.legal.TPInjectionSpectacle.intercepteurs.Spectateurs2"/>
+	<aop:aspectj-autoproxy/>	
+
+	<aop:config>
+		<aop:aspect ref="spectateurs2"/>
+	</aop:config>
+	
+	<!-- Fin de la configuration AOP avec support @AspectJ -->
+</beans>
